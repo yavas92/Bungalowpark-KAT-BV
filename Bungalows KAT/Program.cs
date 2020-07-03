@@ -59,25 +59,21 @@ namespace Bungalows_KAT
                 {
                     case ConsoleKey.D1:
                     case ConsoleKey.NumPad1:
-                        Console.WriteLine();
                         MenuBungalow();
                         break;
 
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
-                        Console.WriteLine();
                         MenuBungalowTypes();
                         break;
 
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
-                        Console.WriteLine();
                         MenuDagkalender();
                         break;
 
                     case ConsoleKey.D4:
                     case ConsoleKey.NumPad4:
-                        Console.WriteLine();
                         MenuKlanten();
                         break;
 
@@ -145,7 +141,6 @@ namespace Bungalows_KAT
             } while (!quit);
 
         }
-
         private static void BungalowsBekijken()
         {
             int index = 0;
@@ -162,7 +157,7 @@ namespace Bungalows_KAT
 
         private static void BungalowVerwijderen()
         {
-            Console.WriteLine("-------------------------");
+            Console.Clear();
             //Ask for index of bungalow that needs to be eddited
             Console.WriteLine($"Welke bungalow wil je verwijderen? (0-{Bungalows.Length - 1})");
             //Check if input is correct
@@ -214,7 +209,7 @@ namespace Bungalows_KAT
 
         static void BungalowBewerken()
         {
-            Console.WriteLine("-------------------------");
+            Console.Clear();
             //Ask for index of bungalow that needs to be eddited
             Console.WriteLine($"Welke bungalow wil je bewerken? (0-{Bungalows.Length - 1})");
             //Check if input is correct
@@ -270,6 +265,7 @@ namespace Bungalows_KAT
 
         static void BungalowToevoegen()
         {
+            Console.Clear();
             int type = 0;
             string adres;
             bool input = false;
@@ -356,6 +352,7 @@ namespace Bungalows_KAT
 
         private static void BungalowTypesToevoegen()
         {
+            Console.Clear();
             //Get new Adress
             Console.WriteLine("Nieuw bungalow type naam?");
             string type = "";
@@ -416,7 +413,7 @@ namespace Bungalows_KAT
 
         private static void BungalowTypesBewerken()
         {
-            Console.WriteLine("-------------------------");
+            Console.Clear();
             //Ask for index of bungalow that needs to be eddited
             Console.WriteLine($"Welke bungalow type wil je bewerken? (0-{BungalowTypes.Length - 1})");
             //Check if input is correct
@@ -502,7 +499,6 @@ namespace Bungalows_KAT
         public static void BungalowTypesVerwijderen()
         {
             Console.Clear();
-            Console.WriteLine("-------------------------");
             //Ask for index of bungalow that needs to be eddited
             Console.WriteLine($"Welke bungalow type wil je verwijderen? (0-{BungalowTypes.Length - 1})");
             //Check if input is correct
@@ -836,7 +832,7 @@ namespace Bungalows_KAT
 
         private static void KlantToevoegen()
         {
-            Console.WriteLine("-------------------------");
+            Console.Clear();
             //Get new Voornaam
             Console.WriteLine("Nieuw klant voornaam?");
             string voornaam = Console.ReadLine();
@@ -890,7 +886,7 @@ namespace Bungalows_KAT
 
         private static void KlantBewerken()
         {
-            Console.WriteLine("-------------------------");
+            Console.Clear();
             //Ask for index of klant that needs to be eddited
             Console.WriteLine($"Welke klant wil je bewerken? (0-{BungalowTypes.Length - 1})");
             //Check if input is correct
@@ -961,7 +957,7 @@ namespace Bungalows_KAT
 
         private static void KlantVerwijderen()
         {
-            Console.WriteLine("-------------------------");
+            Console.Clear();
             //Ask for index of bungalow that needs to be eddited
             Console.WriteLine($"Welke klant wil je verwijderen? (0-{Klanten.Length - 1})");
             //Check if input is correct
