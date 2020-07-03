@@ -9,6 +9,7 @@ namespace Bungalows_KAT
         static BungalowType[] BungalowTypes = new BungalowType[3];
         static Bungalow[] Bungalows = new Bungalow[10];
         static Klanten[] Klanten = new Klanten[4];
+        static Kalender[] KalenderDagen = new Kalender[30];
         static void Main(string[] args)
         {
 
@@ -18,7 +19,7 @@ namespace Bungalows_KAT
 
             for (int i = 0; i < Bungalows.Length; i++)
             {
-                Bungalows[i] = new Bungalow(BungalowTypes[i % 3], "Jan de Josstraat " + ((i * 20) + 1));
+                Bungalows[i] = new Bungalow(BungalowTypes[i % 3], "Jan de Josstraat " + ((i * 20) + 1), i);
             }
 
             Klanten[0] = new Klanten(1, "Abdullah", "Yavas", "Varkensstraat 2, Oink", "BE012345678", 0);
@@ -26,6 +27,22 @@ namespace Bungalows_KAT
             Klanten[2] = new Klanten(3, "Thomas", "Haenen", "Haanstraat 52, Koekelekoe", "BE212345678", 0);
             Klanten[3] = new Klanten(4, "Jo", "Wouters", "Geitstraat 13, Meheheh", "BE312345678", 0);
 
+            DateTime currentDate = DateTime.Today;
+
+            for (int i = 0; i < KalenderDagen.Length; i++)
+            {
+                KalenderDagen[i] = new Kalender(new int[0], new int[0], currentDate.AddDays(i));
+            }
+
+            KalenderDagen[0].BoekingToevoegen(5, 2);
+            KalenderDagen[5].BoekingToevoegen(4, 1);
+            KalenderDagen[6].BoekingToevoegen(4, 1);
+            KalenderDagen[7].BoekingToevoegen(4, 1);
+            KalenderDagen[8].BoekingToevoegen(4, 1);
+            KalenderDagen[9].BoekingToevoegen(4, 1);
+
+
+            KalenderDagen[0].BungalowVerwijderenOpBungalowId(5);
 
             bool quit = false;
             do
@@ -77,7 +94,7 @@ namespace Bungalows_KAT
             } while (!quit);
             Console.Read();
         }
-
+        #region Bungalow
         static void MenuBungalow()
         {
             bool quit = false;
@@ -188,7 +205,7 @@ namespace Bungalows_KAT
                 }
             }
         }
-        #region Bungalow
+
         static void PrintBungalow(int index)
         {
             Console.WriteLine(Bungalows[index].ToString());
@@ -269,7 +286,18 @@ namespace Bungalows_KAT
             Console.WriteLine("Wat is het bungalow adres?");
             adres = Console.ReadLine();
             Array.Resize(ref Bungalows, Bungalows.Length + 1);
-            Bungalows[Bungalows.Length - 1] = new Bungalow(BungalowTypes[type], adres);
+            Bungalows[Bungalows.Length - 1] = new Bungalow(BungalowTypes[type], adres, GetHighestBungalowId() + 1);
+        }
+
+        private static int GetHighestBungalowId()
+        {
+            int highest = int.MinValue;
+            foreach (Bungalow item in Bungalows)
+            {
+                if (item.Id > highest)
+                    highest = item.Id;
+            }
+            return highest;
         }
         #endregion
         #region BungalowTypes
@@ -543,21 +571,21 @@ namespace Bungalows_KAT
                 Console.WriteLine("3. Toevoegen");
                 Console.WriteLine("4. Terug naar hoofdmenu");
 
-                switch (Console.ReadKey().Key)
+                switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.D1:
                     case ConsoleKey.NumPad1:
-                        Console.WriteLine();
+                        DagKalenderBekijken();
                         break;
 
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
-                        Console.WriteLine();
+                        BoekingVerwijderen();
                         break;
 
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
-                        Console.WriteLine();
+                        BoekingToevoegen();
                         break;
 
                     case ConsoleKey.D4:
@@ -570,6 +598,188 @@ namespace Bungalows_KAT
                         break;
                 }
             } while (!quit);
+        }
+
+        static void DagKalenderBekijken()
+        {
+            Console.Clear();
+            TrekLijn("Kalender dagen");
+
+            foreach (var item in KalenderDagen)
+            {
+                Console.WriteLine(item.ToString());
+                Console.WriteLine();
+            }
+
+            Console.ReadKey(true);
+        }
+
+        static void BoekingVerwijderen()
+        {
+            Console.Clear();
+            //Dag
+            Console.WriteLine("Vanaf welke dag moet de boeking verwijderd worden? (vb dd/mm/jjjj)");
+            DateTime dag = DateTime.Parse(Console.ReadLine());
+
+            //Klant
+            Console.WriteLine($"Voor welke klant moet de boeking verwijderd worden? (klantindex) (0-{Klanten.Length - 1})");
+            int klantIndex = 0;
+            bool input = false;
+
+            do
+            {
+                if (!int.TryParse(Console.ReadLine(), out klantIndex))
+                    Console.WriteLine("Ongeldige input");
+                else if (klantIndex > Klanten.Length - 1 || klantIndex < 0)
+                    Console.WriteLine("Ongeldige klant index");
+                else
+                    input = true;
+            } while (!input);
+
+            //Get plaats in kalenderArr
+            int index = -1;
+            for (int i = 0; i < KalenderDagen.Length; i++)
+            {
+                if (KalenderDagen[i].Dag.ToString("dd/MM/yyyy") == dag.ToString("dd/MM/yyyy"))
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1)
+            {
+                Console.WriteLine($"Geen boekingen mogelijk op {dag.ToString("dd/MM/yyyy")}");
+                Console.ReadKey();
+                return;
+            }
+
+            //Check if klant geboekt heeft op ingegeven dag
+            int klantId = Klanten[klantIndex].Id;
+            if (KalenderDagen[index].CheckIdInKlantBungalows(klantId) == -1)
+            {
+                Console.WriteLine($"Klant met index {klantIndex} heeft niet geboekt op {dag.ToString("dd/MM/yyyy")}");
+                Console.ReadKey();
+                return;
+            }
+
+            //Kalenderarray[index] ++ checken of de klant
+            int counter = 0;
+            bool lastDay = false;
+            while (!lastDay)
+            {
+                if (!KalenderDagen[index + counter].BungalowVerwijderenOpKlantId(klantId))
+                {
+                    lastDay = true;
+                }
+                ++counter;
+            }
+
+            Console.ReadKey();
+        }
+        static void BoekingToevoegen()
+        {
+            //Empty console
+            Console.Clear();
+
+            //Ask for begin and end date
+            Console.WriteLine("Wat is de begin datum?");
+            DateTime startDatum = new DateTime();
+            DateTime eindDatum = new DateTime();
+            
+            //Ask until begin date is correct
+            bool input = false;
+            while (!input)
+            {
+                if (!DateTime.TryParse(Console.ReadLine(), out startDatum))
+                    Console.WriteLine("Dit is geen geldige datum!");
+                else if (DateTime.Compare(DateTime.Now, startDatum) > 0)
+                    Console.WriteLine("Error, opgegeven tdatum is in het verleden");
+                else if (DateTime.Compare(KalenderDagen[KalenderDagen.Length - 1].Dag, startDatum) < 0)
+                    Console.WriteLine("Je kan nog niet zo laat boeken");
+                else
+                    input = true;
+            }
+
+            //Ask until end date is correct
+            Console.WriteLine("Wat is de eind datum?");
+            input = false;
+            while (!input)
+            {
+                if (!DateTime.TryParse(Console.ReadLine(), out eindDatum))
+                    Console.WriteLine("Dit is geen geldige datum!");
+                else if (DateTime.Compare(startDatum, eindDatum) >= 0)
+                    Console.WriteLine("Opgegeven eind datum kan niet voor de begin datum zijn!");
+                else if (DateTime.Compare(KalenderDagen[KalenderDagen.Length - 1].Dag, eindDatum) < 0)
+                    Console.WriteLine("Eind datum valt buiten de mogelijke datums.");
+                else
+                    input = true;
+            }
+
+            //Ask for client Index
+            Console.WriteLine($"Voor welke klant wilt u een boeking toevoegen? (klantindex) (0-{Klanten.Length - 1})");
+            int klantIndex = 0;
+            input = false;
+
+            do
+            {
+                if (!int.TryParse(Console.ReadLine(), out klantIndex))
+                    Console.WriteLine("Ongeldige input");
+                else if (klantIndex > Klanten.Length - 1 || klantIndex < 0)
+                    Console.WriteLine("Ongeldige klant index");
+                else
+                    input = true;
+            } while (!input);
+
+            //Ask for Bungalow
+            Console.WriteLine($"Voor bungalow wilt u inboeken? (bungalowIndex) (0-{Bungalows.Length - 1})");
+            int bungalowIndex = 0;
+            input = false;
+
+            do
+            {
+                if (!int.TryParse(Console.ReadLine(), out bungalowIndex))
+                    Console.WriteLine("Ongeldige input");
+                else if (bungalowIndex > Bungalows.Length - 1 || bungalowIndex < 0)
+                    Console.WriteLine("Ongeldige klant index");
+                else
+                    input = true;
+            } while (!input);
+
+            //Check if bungalow is available for that period
+            //Get index of startdate in KalenderDagen
+            //KalenderDagen[i].Dag == beginDatum
+            int startIndex = -1;
+            for (int i = 0; i < KalenderDagen.Length; ++i)
+            {
+                if (DateTime.Compare(KalenderDagen[i].Dag, startDatum) == 0)
+                {
+                    startIndex = i;
+                    break;
+                }
+            }
+
+            if(startIndex == -1)
+            {
+                Console.WriteLine("Geen overeenkomstige startdag gevonden in KalenderDagen");
+                return;
+            }
+
+            for (int i = 0; i <= (eindDatum.Date - startDatum.Date).Days; ++i )
+            {
+                if (KalenderDagen[startIndex + i].CheckIdInVolleBungalows(Bungalows[bungalowIndex].Id) != -1)
+                {
+                    Console.WriteLine("Deze periode is de bungalow al volzet");
+                    Console.ReadKey(true);
+                    return;
+                }
+            }
+
+            //Add to Kalender
+            for (int i = 0; i <= (eindDatum.Date - startDatum.Date).Days; ++i)
+            {
+                KalenderDagen[startIndex + i].BoekingToevoegen(Bungalows[bungalowIndex].Id, Klanten[klantIndex].Id);
+            }
         }
         #endregion
         #region Klanten
@@ -660,11 +870,11 @@ namespace Bungalows_KAT
             //Get new index
             int index = GetHighestId() + 1;
             Array.Resize(ref Klanten, Klanten.Length + 1);
-            Klanten[Klanten.Length - 1] = new Klanten(index, voornaam, achternaam, adres, bankkaart,aantalBoekingen);
+            Klanten[Klanten.Length - 1] = new Klanten(index, voornaam, achternaam, adres, bankkaart, aantalBoekingen);
 
             Console.Clear();
             PrintKlant(Klanten.Length - 1);
-            Console.WriteLine();  
+            Console.WriteLine();
         }
 
         private static int GetHighestId()
@@ -672,8 +882,8 @@ namespace Bungalows_KAT
             int highest = int.MinValue;
             foreach (Klanten item in Klanten)
             {
-                if (item.ID > highest)
-                    highest = item.ID;
+                if (item.Id > highest)
+                    highest = item.Id;
             }
             return highest;
         }
@@ -802,10 +1012,12 @@ namespace Bungalows_KAT
 
         static void KlantenBekijken()
         {
-            int index = 0;
             Console.Clear();
+            int counter = 0;
             foreach (var klant in Klanten)
             {
+                Console.WriteLine($"Klant index: {counter}");
+                ++counter;
                 Console.WriteLine(klant.ToString());
                 Console.WriteLine();
             }
