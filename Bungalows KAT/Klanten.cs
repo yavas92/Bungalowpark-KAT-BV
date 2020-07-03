@@ -6,7 +6,7 @@ namespace Bungalows_KAT
 {
     class Klanten
     {
-        public int ID { get; }
+        public int Id { get; }
         public string Voornaam { get; set; }
         public string Achternaam { get; set; }
         public string Adres { get; set; }
@@ -15,7 +15,7 @@ namespace Bungalows_KAT
 
         public Klanten(int id, string voornaam, string achternaam, string adres, string bankkaart, int aantalBoekingen)
         {
-            ID = id;
+            Id = id;
             Voornaam = voornaam;
             Achternaam = achternaam;
             Adres = adres;
@@ -25,7 +25,7 @@ namespace Bungalows_KAT
 
         public override string ToString()
         {
-            return $"Id: {ID}\nVoornaam: {Voornaam}\nAchternaam: {Achternaam}\nAdres: {Adres}\nBankkaart: {Bankkaart}\nAantalBoekingen: {AantalBoekingen}";
+            return $"Id: {Id}\nVoornaam: {Voornaam}\nAchternaam: {Achternaam}\nAdres: {Adres}\nBankkaart: {Bankkaart}\nAantalBoekingen: {AantalBoekingen}";
         }
     }
 }
