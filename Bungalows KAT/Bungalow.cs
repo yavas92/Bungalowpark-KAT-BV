@@ -12,16 +12,17 @@ namespace Bungalows_KAT
         public string Adres { get; set; }
 
         // Constructor
-        public Bungalow(BungalowType type, string adres)
+        public Bungalow(BungalowType type, string adres, int id)
         {
             Type = type;
             Adres = adres;
+            Id = id;
         }
 
         // Methods
         public override string ToString()
         {
-            return $"Adres: {Adres} \n{Type}";
+            return $"ID: {Id}\nAdres: {Adres} \n{Type}";
         }
 
     }
