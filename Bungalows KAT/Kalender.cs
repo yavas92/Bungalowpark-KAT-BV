@@ -31,9 +31,9 @@ namespace Bungalows_KAT
         }
 
         //Boeking toevoegen
-        public bool BungalowToevoegen(int bungalowId, int klantId)
+        public bool BoekingToevoegen(int bungalowId, int klantId)
         {
-            if (CheckIdInVolleBungalows(bungalowId) == -1)
+            if (CheckIdInVolleBungalows(bungalowId) != -1)
                 return false;
 
             Array.Resize(ref volleBungalowIds, volleBungalowIds.Length + 1);
@@ -46,10 +46,26 @@ namespace Bungalows_KAT
         }
 
         //Boeking verwijderen
-        public bool BungalowVerwijderen(int bungalowId)
+        public bool BungalowVerwijderenOpBungalowId(int bungalowId)
         {
             int index = CheckIdInVolleBungalows(bungalowId);
-            if (index != -1)
+            if (index == -1)
+                return false;
+
+            //Replace index with last
+            volleBungalowIds[index] = volleBungalowIds[volleBungalowIds.Length - 1];
+            klantBungalowIds[index] = klantBungalowIds[klantBungalowIds.Length - 1];
+
+            //Remove last element
+            Array.Resize(ref volleBungalowIds, volleBungalowIds.Length - 1);
+            Array.Resize(ref klantBungalowIds, klantBungalowIds.Length - 1);
+            return true;
+        }
+
+        public bool BungalowVerwijderenOpKlantId(int klantId)
+        {
+            int index = CheckIdInKlantBungalows(klantId);
+            if (index == -1)
                 return false;
 
             //Replace index with last
@@ -63,7 +79,7 @@ namespace Bungalows_KAT
         }
 
         //Return index of bungalow Id if available
-        private int CheckIdInVolleBungalows(int bungalowId)
+        public int CheckIdInVolleBungalows(int bungalowId)
         {
             for (int i = 0; i < volleBungalowIds.Length; i++)
             {
@@ -72,6 +88,40 @@ namespace Bungalows_KAT
             }
 
             return -1;
+        }
+
+        //Return index of klant Id if available
+        public int CheckIdInKlantBungalows(int klantId)
+        {
+            for (int i = 0; i < klantBungalowIds.Length; i++)
+            {
+                if (klantId == klantBungalowIds[i])
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public override string ToString()
+        {
+
+            return $"Dag: {Dag.ToString("dd/MM/yyyy")}\nBungalow ID's: {PrintArray(volleBungalowIds)}\nKlant ID's   : {PrintArray(klantBungalowIds)}";
+        }
+
+        public static string PrintArray(int[] arrToPrint, string divider = " ")
+        {
+            StringBuilder toReturn = new StringBuilder();
+
+            for (int i = 0; i < arrToPrint.Length; i++)
+            {
+                if (i == arrToPrint.Length - 1)
+                   toReturn.Append(arrToPrint[i]);
+                else
+                    toReturn.Append($"{arrToPrint[i]}{divider}");
+
+            }
+
+            return toReturn.ToString();
         }
     }
 }
