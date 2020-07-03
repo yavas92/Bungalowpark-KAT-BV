@@ -7,6 +7,7 @@ namespace Bungalows_KAT
     class Bungalow
     {
         // Properties
+        public int Id { get; }
         public BungalowType Type { get; set; }
         public string Adres { get; set; }
 
